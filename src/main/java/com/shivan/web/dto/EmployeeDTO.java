@@ -1,6 +1,7 @@
 package com.shivan.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.shivan.web.annotations.EmployeeRoleValidation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -20,5 +21,7 @@ public class EmployeeDTO {
     private LocalDate dateOfJoining;
     @JsonProperty("isActive")
     private Boolean isActive;
+    @EmployeeRoleValidation
+    private String role;
 
 }

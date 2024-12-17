@@ -2,6 +2,7 @@ package com.shivan.web.services;
 
 import com.shivan.web.dto.EmployeeDTO;
 import com.shivan.web.entites.EmployeeEntity;
+import com.shivan.web.exceptions.ResourceNotFoundException;
 import com.shivan.web.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,7 @@ public class EmployeeService {
 
 
     public EmployeeDTO updateEmployeeById(Long employeeId, EmployeeDTO employeeDTO) {
+        isExistsByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = modelMapper.map(employeeDTO, EmployeeEntity.class);
         employeeEntity.setId(employeeId);
         EmployeeEntity savedEmployeeEntity = employeeRepository.save(employeeEntity);
@@ -50,17 +52,19 @@ public class EmployeeService {
 
     public boolean deleteEmployeeById(Long employeeId) {
 
-        if(!isExistsByEmployeeId(employeeId)) return false;
+        isExistsByEmployeeId(employeeId);
         employeeRepository.deleteById(employeeId);
         return true;
     }
 
-    public boolean isExistsByEmployeeId(Long employeeId) {
-        return employeeRepository.existsById(employeeId);
+    public void isExistsByEmployeeId(Long employeeId) {
+        boolean exists = employeeRepository.existsById(employeeId);
+        if(!exists) throw new ResourceNotFoundException("Employee Not found with id : " + employeeId);
+
     }
 
     public EmployeeDTO partialUpdateById(Long employeeId, Map<String, Object> updates) {
-        if(!isExistsByEmployeeId(employeeId)) return null;
+        isExistsByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).orElse(null);
 
         updates.forEach((key, value) -> {

@@ -1,6 +1,7 @@
 package com.shivan.web.controllers;
 
 import com.shivan.web.dto.EmployeeDTO;
+import com.shivan.web.exceptions.ResourceNotFoundException;
 import com.shivan.web.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -22,9 +24,11 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long employeeId) {
         Optional<EmployeeDTO> employeeDTO = employeeService.getEmployeeById(employeeId);
         return employeeDTO
-                .map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1)).orElse(ResponseEntity.notFound().build());
-
+                .map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1))
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id : " + employeeId));
     }
+
+
 
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
